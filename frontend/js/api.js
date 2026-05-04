@@ -5,7 +5,7 @@ DLT.api = (() => {
     const apiStatus = () => document.getElementById("apiStatus");
 
     const getApiBase = () => {
-        const value = apiBaseInput()?.value || localStorage.getItem("dlt_api_base") || "http://localhost:8000";
+        const value = apiBaseInput()?.value || localStorage.getItem("dlt_api_base") || "https://deep-learning-toolbox-api.onrender.com";
         return value.replace(/\/+$/, "");
     };
 
