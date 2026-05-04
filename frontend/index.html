@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning Toolbox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="landing-page">
+    <header class="site-header">
+        <a class="brand-mark" href="index.html" aria-label="Deep Learning Toolbox home">
+            <span class="brand-symbol">DL</span>
+            <span>Deep Learning Toolbox</span>
+        </a>
+        <nav class="header-actions" aria-label="Primary navigation">
+            <a href="dashboard.html">Dashboard</a>
+            <a class="button button-primary" href="dashboard.html">Launch module</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-copy">
+                <p class="eyebrow">Interactive deep learning modules</p>
+                <h1>Learn <span class="headline-accent">model behavior</span> by moving the system.</h1>
+                <p class="hero-text">
+                    Tune classification boundaries, inspect activation gradients, get model diagnoses, run what-if simulations, analyze images, and try an RNN next-word predictor.
+                </p>
+                <div class="hero-actions">
+                    <a class="button button-primary" href="dashboard.html">Open dashboard</a>
+                    <a class="button button-secondary" href="#preview">View preview</a>
+                </div>
+            </div>
+
+            <a id="preview" class="hero-dashboard-link" href="dashboard.html" aria-label="Open Perceptron dashboard">
+                <div class="hero-dashboard">
+                    <div class="preview-topbar">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="preview-layout">
+                        <aside class="preview-sidebar">
+                            <span class="preview-nav active"></span>
+                            <span class="preview-nav"></span>
+                            <span class="preview-nav short"></span>
+                        </aside>
+                        <div class="preview-main">
+                            <div class="preview-metrics">
+                                <span>Accuracy <strong>100%</strong></span>
+                                <span>Model <strong>MLP</strong></span>
+                            </div>
+                            <div class="preview-graph">
+                                <span class="dot dot-zero d1"></span>
+                                <span class="dot dot-one d2"></span>
+                                <span class="dot dot-one d3"></span>
+                                <span class="dot dot-zero d4"></span>
+                                <span class="curve-line"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </section>
+
+        <section class="module-strip" aria-label="Available modules">
+            <article>
+                <span class="module-number">01</span>
+                <h2>Perceptron and MLP</h2>
+                <p>Linear vs non-linear classification for Boolean datasets.</p>
+            </article>
+            <article>
+                <span class="module-number">02</span>
+                <h2>Activation Lab</h2>
+                <p>ReLU, Sigmoid, and Tanh graphs with gradient behavior.</p>
+            </article>
+            <article>
+                <span class="module-number">03</span>
+                <h2>Gradient Descent</h2>
+                <p>Loss curves, convergence speed, and learning-rate intuition.</p>
+            </article>
+            <article>
+                <span class="module-number">04</span>
+                <h2>Explain My Model</h2>
+                <p>Plain-language diagnosis for overfitting, weak generalization, and unstable learning rates.</p>
+            </article>
+            <article>
+                <span class="module-number">05</span>
+                <h2>What If Playground</h2>
+                <p>Move neurons, learning rate, epochs, and noise to see impact instantly.</p>
+            </article>
+            <article>
+                <span class="module-number">06</span>
+                <h2>CNN + OpenCV</h2>
+                <p>Image upload analysis, detection boxes, and webcam faces.</p>
+            </article>
+            <article>
+                <span class="module-number">07</span>
+                <h2>RNN Next Word</h2>
+                <p>Text input sequence learning with next-word prediction.</p>
+            </article>
+        </section>
+    </main>
+</body>
+</html>

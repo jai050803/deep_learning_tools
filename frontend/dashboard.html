@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning Dashboard - Toolbox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-root">
+        <header class="dashboard-topbar">
+            <a class="brand-mark" href="index.html" aria-label="Deep Learning Toolbox home">
+                <span class="brand-symbol">DL</span>
+                <span>Toolbox</span>
+            </a>
+            <label class="api-field">
+                <span>API</span>
+                <input id="apiBase" type="url" autocomplete="off" value="http://localhost:8000">
+            </label>
+            <div class="api-status" id="apiStatus">Connecting</div>
+        </header>
+
+        <nav class="tab-bar" aria-label="Dashboard sections">
+            <button class="tab-item active" type="button" data-view-target="perceptronView">Perceptron + MLP</button>
+            <button class="tab-item" type="button" data-view-target="activationView">Activation</button>
+            <button class="tab-item" type="button" data-view-target="gradientView">Gradient Descent</button>
+            <button class="tab-item" type="button" data-view-target="explainView">Explain Model</button>
+            <button class="tab-item" type="button" data-view-target="whatIfView">What If</button>
+            <button class="tab-item" type="button" data-view-target="visionView">CNN + OpenCV</button>
+            <button class="tab-item" type="button" data-view-target="rnnView">RNN</button>
+        </nav>
+
+        <main class="dashboard-content">
+            <section class="view-panel active" id="perceptronView" data-view-title="Perceptron and MLP Lab">
+                <div class="view-header">
+                    <div>
+                        <p class="eyebrow">Module 01</p>
+                        <h1>Perceptron and MLP Lab</h1>
+                    </div>
+                    <span id="resultBadge" class="result-badge">Ready</span>
+                </div>
+
+                <section class="dashboard-grid">
+                    <form class="card control-panel card-4" id="controlForm">
+                        <div class="card-header compact">
+                            <h2 class="card-title">Controls</h2>
+                            <button class="button button-primary" type="submit">Run</button>
+                        </div>
+
+                        <div class="field-grid">
+                            <label class="field">
+                                <span>Dataset</span>
+                                <select id="dataset">
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                    <option value="XOR">XOR</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Model</span>
+                                <select id="modelType">
+                                    <option value="perceptron">Perceptron</option>
+                                    <option value="mlp">MLP</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <label class="toggle-row">
+                            <input id="trainToggle" type="checkbox" checked>
+                            <span>Train from current weights</span>
+                        </label>
+
+                        <div class="slider-group" id="weightControls">
+                            <label class="slider-field">
+                                <span>Weight x1 <output id="w1Value">0.20</output></span>
+                                <input id="w1" type="range" min="-3" max="3" step="0.05" value="0.2">
+                            </label>
+                            <label class="slider-field">
+                                <span>Weight x2 <output id="w2Value">-0.35</output></span>
+                                <input id="w2" type="range" min="-3" max="3" step="0.05" value="-0.35">
+                            </label>
+                            <label class="slider-field">
+                                <span>Bias <output id="biasValue">0.10</output></span>
+                                <input id="bias" type="range" min="-3" max="3" step="0.05" value="0.1">
+                            </label>
+                        </div>
+
+                        <div class="field-grid">
+                            <label class="slider-field">
+                                <span>Learning rate <output id="learningRateValue">0.20</output></span>
+                                <input id="learningRate" type="range" min="0.01" max="1" step="0.01" value="0.2">
+                            </label>
+                            <label class="field">
+                                <span>Epochs</span>
+                                <input id="epochs" type="number" min="0" max="5000" step="1" value="24">
+                            </label>
+                        </div>
+                    </form>
+
+                    <section class="card graph-panel card-8">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Decision Boundary</h2>
+                                <p id="conceptText">Linear perceptron: one straight decision boundary works for AND/OR, but not XOR.</p>
+                            </div>
+                            <div class="legend">
+                                <span><i class="class-zero"></i>Class 0</span>
+                                <span><i class="class-one"></i>Class 1</span>
+                            </div>
+                        </div>
+                        <canvas id="decisionCanvas" width="720" height="520" aria-label="Decision boundary graph"></canvas>
+                    </section>
+
+                    <article class="metric-card card-3">
+                        <span>Accuracy</span>
+                        <strong id="accuracyMetric">--</strong>
+                        <small>vs target table</small>
+                    </article>
+                    <article class="metric-card card-3">
+                        <span>Dataset</span>
+                        <strong id="datasetMetric">AND</strong>
+                        <small>logic gate</small>
+                    </article>
+                    <article class="metric-card card-3">
+                        <span>Model</span>
+                        <strong id="modelMetric">Perceptron</strong>
+                        <small>current learner</small>
+                    </article>
+                    <article class="metric-card card-3">
+                        <span>Epochs Tracked</span>
+                        <strong id="historyMetric">0</strong>
+                        <small>training snapshots</small>
+                    </article>
+
+                    <section class="card table-panel card-12">
+                        <div class="card-header">
+                            <h2 class="card-title">Truth Table</h2>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>x1</th>
+                                        <th>x2</th>
+                                        <th>Target</th>
+                                        <th>Prediction</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="truthTable"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </section>
+            </section>
+
+            <section class="view-panel" id="activationView" data-view-title="Activation Function Lab">
+                <div class="view-header">
+                    <div>
+                        <p class="eyebrow">Module 02</p>
+                        <h1>Activation Function Lab</h1>
+                    </div>
+                    <div class="api-status" id="activationState">Ready</div>
+                </div>
+
+                <section class="dashboard-grid">
+                    <form class="card control-panel card-4" id="activationForm">
+                        <label class="field">
+                            <span>Activation</span>
+                            <select id="activationType">
+                                <option value="relu">ReLU</option>
+                                <option value="sigmoid">Sigmoid</option>
+                                <option value="tanh">Tanh</option>
+                            </select>
+                        </label>
+                        <div class="mini-stat">
+                            <span>Vanishing Region</span>
+                            <strong id="vanishingMetric">--</strong>
+                        </div>
+                        <p class="hint-text" id="activationConcept">Choose a function to view gradient behavior.</p>
+                    </form>
+                    <div class="card graph-panel graph-stack card-8">
+                        <canvas id="activationCanvas" width="760" height="320" aria-label="Activation function graph"></canvas>
+                        <canvas id="gradientCanvas" width="760" height="220" aria-label="Activation gradient graph"></canvas>
+                    </div>
+                </section>
+            </section>
+
+            <section class="view-panel" id="gradientView" data-view-title="Gradient Descent Simulator">
+                <div class="view-header">
+                    <div>
+                        <p class="eyebrow">Module 03</p>
+                        <h1>Gradient Descent Simulator</h1>
+                    </div>
+                    <div class="api-status" id="gdState">Ready</div>
+                </div>
+
+                <section class="dashboard-grid">
+                    <form class="card control-panel card-4" id="gdForm">
+                        <label class="slider-field">
+                            <span>Learning rate <output id="gdLearningRateValue">0.08</output></span>
+                            <input id="gdLearningRate" type="range" min="0.001" max="1.2" step="0.001" value="0.08">
+                        </label>
+                        <label class="field">
+                            <span>Epochs</span>
+                            <input id="gdEpochs" type="number" min="1" max="400" value="48">
+                        </label>
+                        <label class="slider-field">
+                            <span>Start weight <output id="gdStartValue">-4.00</output></span>
+                            <input id="gdStart" type="range" min="-10" max="10" step="0.1" value="-4">
+                        </label>
+                        <div class="mini-stat">
+                            <span>Convergence</span>
+                            <strong id="convergenceMetric">--</strong>
+                        </div>
+                    </form>
+                    <div class="card graph-panel graph-stack card-8">
+                        <canvas id="lossCanvas" width="760" height="300" aria-label="Loss curve"></canvas>
+                        <canvas id="weightCanvas" width="760" height="240" aria-label="Weight convergence path"></canvas>
+                    </div>
+                </section>
+            </section>
+
+            <section class="view-panel" id="visionView" data-view-title="CNN + OpenCV Projects">
+                <div class="view-header">
+                    <div>
+                        <p class="eyebrow">Module 06</p>
+                        <h1>CNN + OpenCV Projects</h1>
+                    </div>
+                    <div class="api-status" id="visionState">Ready</div>
+                </div>
+
+                <section class="dashboard-grid">
+                    <form class="card control-panel card-4" id="visionForm">
+                        <label class="field">
+                            <span>Task</span>
+                            <select id="visionTask">
+                                <option value="image_classification">Image classification</option>
+                                <option value="object_detection">Object detection</option>
+                                <option value="face_detection">Face detection</option>
+                            </select>
+                        </label>
+                        <label class="field file-field">
+                            <span>Upload image</span>
+                            <input id="visionImage" type="file" accept="image/*">
+                        </label>
+                        <button class="button button-primary" type="submit">Analyze</button>
+                        <div class="prediction-list" id="visionPredictions"></div>
+                    </form>
+
+                    <div class="card vision-preview graph-panel card-8">
+                        <img id="visionOutput" alt="Annotated vision output">
+                        <div class="empty-preview" id="visionEmpty">Upload an image to see predictions and bounding boxes.</div>
+                    </div>
+
+                    <div class="card webcam-panel graph-panel card-12">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">Webcam face detection</h2>
+                                <p>Runs in the browser when supported, with backend frame analysis as a fallback.</p>
+                            </div>
+                            <button class="button button-secondary" id="webcamToggle" type="button">Open webcam</button>
+                        </div>
+                        <div class="webcam-stage">
+                            <video id="webcamVideo" autoplay playsinline muted></video>
+                            <canvas id="webcamCanvas" width="720" height="420" aria-label="Webcam face detection overlay"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section class="view-panel" id="explainView" data-view-title="Explain My Model">
+                <div class="view-header">
+                    <div>
+                        <p class="eyebrow">Module 04</p>
+                        <h1>Explain My Model</h1>
+                    </div>
+                    <div class="api-status" id="explainState">Ready</div>
+                </div>
+
+                <section class="dashboard-grid">
+                    <form class="card control-panel card-4" id="explainForm">
+                        <div class="field-grid">
+                            <label class="field">
+                                <span>Dataset</span>
+                                <select id="explainDataset">
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                    <option value="XOR" selected>XOR</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Model</span>
+                                <select id="explainModelType">
+                                    <option value="perceptron">Perceptron</option>
+                                    <option value="mlp" selected>MLP</option>
+                                </select>
+                            </label>
+                        </div>
+                        <label class="slider-field">
+                            <span>Learning rate <output id="explainLearningRateValue">0.20</output></span>
+                            <input id="explainLearningRate" type="range" min="0.001" max="1.5" step="0.001" value="0.2">
+                        </label>
+                        <label class="slider-field">
+                            <span>Epochs <output id="explainEpochsValue">120</output></span>
+                            <input id="explainEpochs" type="range" min="1" max="1000" step="1" value="120">
+                        </label>
+                        <label class="slider-field">
+                            <span>Hidden neurons <output id="explainNeuronsValue">4</output></span>
+                            <input id="explainNeurons" type="range" min="1" max="16" step="1" value="4">
+                        </label>
+                        <button class="button button-primary" type="submit">Explain</button>
+                    </form>
+
+                    <section class="card explain-summary card-8">
+                        <div class="card-header">
+                            <h2 class="card-title">Diagnosis</h2>
+                            <span class="code-value" id="healthScore">health: --</span>
+                        </div>
+                        <div class="explain-metrics">
+                            <article>
+                                <span>Train accuracy</span>
+                                <strong id="explainTrainAccuracy">--</strong>
+                            </article>
+                            <article>
+                                <span>Validation accuracy</span>
+                                <strong id="explainValidationAccuracy">--</strong>
+                            </article>
+                            <article>
+                                <span>Generalization gap</span>
+                                <strong id="explainGap">--</strong>
+                            </article>
+                        </div>
+                        <div class="insight-list" id="insightList"></div>
+                    </section>
+
+                    <section class="card table-panel card-12">
+                        <div class="card-header">
+                            <h2 class="card-title">Recommended next steps</h2>
+                        </div>
+                        <div class="recommendation-list" id="recommendationList"></div>
+                    </section>
+                </section>
+            </section>
+
+            <section class="view-panel" id="whatIfView" data-view-title="What If Playground">
+                <div class="view-header">
+                    <div>
+                        <p class="eyebrow">Module 05</p>
+                        <h1>What If Playground</h1>
+                    </div>
+                    <div class="api-status" id="whatIfState">Ready</div>
+                </div>
+
+                <section class="dashboard-grid">
+                    <form class="card control-panel card-4" id="whatIfForm">
+                        <label class="field">
+                            <span>Dataset</span>
+                            <select id="whatIfDataset">
+                                <option value="AND">AND</option>
+                                <option value="OR">OR</option>
+                                <option value="XOR" selected>XOR</option>
+                            </select>
+                        </label>
+                        <label class="slider-field">
+                            <span>Neurons <output id="whatIfNeuronsValue">4</output></span>
+                            <input id="whatIfNeurons" type="range" min="1" max="16" step="1" value="4">
+                        </label>
+                        <label class="slider-field">
+                            <span>Learning rate <output id="whatIfLearningRateValue">0.20</output></span>
+                            <input id="whatIfLearningRate" type="range" min="0.001" max="1.5" step="0.001" value="0.2">
+                        </label>
+                        <label class="slider-field">
+                            <span>Epochs <output id="whatIfEpochsValue">120</output></span>
+                            <input id="whatIfEpochs" type="range" min="1" max="1000" step="1" value="120">
+                        </label>
+                        <label class="slider-field">
+                            <span>Noise <output id="whatIfNoiseValue">0.08</output></span>
+                            <input id="whatIfNoise" type="range" min="0" max="0.4" step="0.01" value="0.08">
+                        </label>
+                    </form>
+
+                    <section class="card graph-panel graph-stack card-8">
+                        <canvas id="whatIfLossCanvas" width="760" height="320" aria-label="What if loss curve"></canvas>
+                    </section>
+
+                    <article class="metric-card card-3">
+                        <span>Train Accuracy</span>
+                        <strong id="whatIfTrainAccuracy">--</strong>
+                        <small>model fit</small>
+                    </article>
+                    <article class="metric-card card-3">
+                        <span>Validation Accuracy</span>
+                        <strong id="whatIfValidationAccuracy">--</strong>
+                        <small>generalization</small>
+                    </article>
+                    <article class="metric-card card-3">
+                        <span>Gap</span>
+                        <strong id="whatIfGap">--</strong>
+                        <small>overfit signal</small>
+                    </article>
+                    <article class="metric-card card-3">
+                        <span>Behavior</span>
+                        <strong id="whatIfBehavior">--</strong>
+                        <small>training state</small>
+                    </article>
+                </section>
+            </section>
+
+            <section class="view-panel" id="rnnView" data-view-title="RNN Next Word Prediction">
+                <div class="view-header">
+                    <div>
+                        <p class="eyebrow">Module 07</p>
+                        <h1>RNN Next Word Prediction</h1>
+                    </div>
+                    <div class="api-status" id="rnnState">Ready</div>
+                </div>
+
+                <section class="dashboard-grid">
+                    <form class="card control-panel card-4" id="rnnForm">
+                        <label class="field">
+                            <span>Text input</span>
+                            <textarea id="rnnText" rows="4" spellcheck="false">Hello how are</textarea>
+                        </label>
+                        <button class="button button-primary" type="submit">Predict</button>
+                        <p class="hint-text" id="rnnConcept">Type a short phrase and the RNN will score likely next words.</p>
+                    </form>
+
+                    <section class="card rnn-result card-8">
+                        <div class="card-header">
+                            <h2 class="card-title">Prediction</h2>
+                            <span class="code-value" id="rnnTokens">tokens: --</span>
+                        </div>
+                        <div class="rnn-prediction">
+                            <span>Next word</span>
+                            <strong id="rnnPrediction">--</strong>
+                        </div>
+                        <div class="prediction-bars" id="rnnPredictions"></div>
+                    </section>
+
+                    <section class="card table-panel card-12">
+                        <div class="card-header">
+                            <h2 class="card-title">Hidden State Preview</h2>
+                        </div>
+                        <div class="hidden-state" id="rnnHiddenState"></div>
+                    </section>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/perceptron-view.js"></script>
+    <script src="js/activation-view.js"></script>
+    <script src="js/gradient-view.js"></script>
+    <script src="js/explain-view.js"></script>
+    <script src="js/what-if-view.js"></script>
+    <script src="js/vision-view.js"></script>
+    <script src="js/rnn-view.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
